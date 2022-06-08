@@ -51,3 +51,34 @@ struct ip_mreq
 
 代码分别在```multicast_sender.c```和```multicast_receiver.c```
 
+
+
+
+
+### 广播
+
+广播和多播类似, 一次性向多个主机发送数据
+
+但是多播可以跨越不同网络给特定主机传输数据(只要加入多播组), 但广播只能向同一网络的主机传输数据
+
+比如, 希望向网络地址为```192.12.34```的所有主机传输数据时, 可以向```192.12.34.255```传输(把剩余位都置```1```)
+
+特别的, 如果希望向本地网络广播, 使用```IP```为```255.255.255.255```
+
+#### 实现
+
+```receiver```端非常简单, 和普通```udp```收数据保持一致即可
+
+```sender```端除了发送```IP```改为广播```IP```, 还需要给套接字加上可选项
+
+```c
+int send_sock;
+int bcast;
+...
+send_sock=socket(PF_INET,SOCK_DGRAM,0);
+...
+setsockopt(send_sock,SOL_SOCKET,SO_BROADCAST,(void*)&bcast,sizeof(bcast));
+...
+```
+
+代码分别在```broadcast_sender.c```和```broadcast_receiver.c```
